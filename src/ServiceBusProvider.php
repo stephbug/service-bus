@@ -9,7 +9,6 @@ use Illuminate\Support\ServiceProvider;
 use StephBug\ServiceBus\Bus\CommandBus;
 use StephBug\ServiceBus\Bus\EventBus;
 use StephBug\ServiceBus\Bus\QueryBus;
-use StephBug\ServiceBus\Exception\RuntimeException;
 
 class ServiceBusProvider extends ServiceProvider
 {
@@ -32,7 +31,7 @@ class ServiceBusProvider extends ServiceProvider
 
         $this->registerBusManager();
 
-        // $this->registerDefaultBuses();
+        $this->registerDefaultBuses();
     }
 
     public function provides(): array
@@ -53,35 +52,17 @@ class ServiceBusProvider extends ServiceProvider
 
     protected function registerDefaultBuses(): void
     {
-        $buses = $this->app->make('config')->get('service_bus.buses');
+        $this->app->singleton(CommandBus::class, function (Application $app) {
+            return $app->make('service_bus')->command();
+        });
 
-        foreach ($buses as $bus) {
-            foreach ($bus as $type => $name) {
+        $this->app->singleton(EventBus::class, function (Application $app) {
+            return $app->make('service_bus')->event();
+        });
 
-                switch ($type) {
-                    case 'command':
-                        $typeAlias = CommandBus::class;
-                        break;
-
-                    case 'event':
-                        $typeAlias = EventBus::class;
-                        break;
-
-                    case 'query':
-                        $typeAlias = QueryBus::class;
-                        break;
-
-                    default:
-                        throw new RuntimeException(
-                            sprintf('Unable to determine bus type %s for bus name %s', $type, $name)
-                        );
-                }
-
-                $this->app->singleton($typeAlias, function (Application $app) use ($typeAlias, $name) {
-                    return $app->make('service_bus')->make($name, $typeAlias);
-                });
-            }
-        }
+        $this->app->singleton(QueryBus::class, function (Application $app) {
+            return $app->make('service_bus')->query();
+        });
     }
 
     protected function mergeConfig(): void
