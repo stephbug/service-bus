@@ -7,7 +7,7 @@ namespace StephBug\ServiceBus;
 use Illuminate\Contracts\Foundation\Application;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\Common\Messaging\FQCNMessageFactory;
-use Prooph\Common\Messaging\MessageFactory;
+use Prooph\ServiceBus\MessageBus;
 use Prooph\ServiceBus\Plugin\MessageFactoryPlugin;
 use Prooph\ServiceBus\Plugin\Router\AsyncSwitchMessageRouter;
 use StephBug\ServiceBus\Bus\CommandBus;
@@ -40,7 +40,7 @@ class ServiceBusManager
         $this->app = $app;
     }
 
-    public function make(string $busName, string $busType): NamedMessageBus
+    public function make(string $busName, string $busType): MessageBus
     {
         $id = $busName . $busType;
 
@@ -60,17 +60,17 @@ class ServiceBusManager
         return $this->buses[$id];
     }
 
-    public function command(string $name = null): NamedMessageBus
+    public function command(string $name = null): MessageBus
     {
         return $this->make($name ?? 'default', 'command');
     }
 
-    public function event(string $name = null): NamedMessageBus
+    public function event(string $name = null): MessageBus
     {
         return $this->make($name ?? 'default', 'event');
     }
 
-    public function query(string $name = null): NamedMessageBus
+    public function query(string $name = null): MessageBus
     {
         return $this->make($name ?? 'default', 'query');
     }

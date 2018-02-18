@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace StephBug\ServiceBus;
 
 use Prooph\Common\Messaging\Message;
+use StephBug\ServiceBus\Exception\RuntimeException;
 
 class ServiceBusDispatcher
 {
@@ -35,7 +36,14 @@ class ServiceBusDispatcher
                 break;
 
             case 'query':
-               return $this->busManager->query($busName)->dispatch($message);
+                return $this->busManager->query($busName)->dispatch($message);
+
+            default:
+                throw new RuntimeException(
+                    sprintf(
+                        'Unable to determine bus type %s for message name %s',
+                        $message->messageType(), $message->messageName()
+                    ));
         }
     }
 }

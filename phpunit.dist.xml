@@ -15,7 +15,7 @@
          stopOnFailure="false"
          verbose="true">
     <testsuites>
-        <testsuite name="Thrustbit ServiceBus Test Suite">
+        <testsuite name="StephBug ServiceBus Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
