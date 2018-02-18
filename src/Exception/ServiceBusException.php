@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StephBugDev\ServiceBus\Exception;
+namespace StephBug\ServiceBus\Exception;
 
 interface ServiceBusException
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StephBugDev\ServiceBus\Plugin;
+namespace StephBug\ServiceBus\Plugin;
 
 use Illuminate\Contracts\Foundation\Application;
 use Prooph\Common\Event\ActionEvent;

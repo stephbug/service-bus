@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StephBugDev\ServiceBus;
+namespace StephBug\ServiceBus;
 
 use Prooph\Common\Messaging\Message;
 

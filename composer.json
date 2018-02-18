@@ -1,5 +1,5 @@
 {
-  "name": "stephbugdev/service-bus",
+  "name": "stephbug/service-bus",
   "description": "",
   "type": "project",
   "license": "MIT",
@@ -28,12 +28,12 @@
   },
   "autoload": {
     "psr-4": {
-      "StephBugDev\\ServiceBus\\": "src/"
+      "StephBug\\ServiceBus\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "StephBugDevTest\\ServiceBus\\": "tests/"
+      "StephBugTest\\ServiceBus\\": "tests/"
     }
   },
   "extra": {
@@ -42,7 +42,7 @@
     },
     "laravel": {
       "providers": [
-        "StephBugDev\\ServiceBus\\ServiceBusProvider"
+        "StephBug\\ServiceBus\\ServiceBusProvider"
       ]
     }
   }

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace StephBugDev\ServiceBus;
+namespace StephBug\ServiceBus;
 
 use Illuminate\Contracts\Foundation\Application;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\Common\Messaging\FQCNMessageFactory;
 use Prooph\ServiceBus\Plugin\Router\AsyncSwitchMessageRouter;
-use StephBugDev\ServiceBus\Bus\CommandBus;
-use StephBugDev\ServiceBus\Bus\EventBus;
-use StephBugDev\ServiceBus\Bus\NamedMessageBus;
-use StephBugDev\ServiceBus\Bus\QueryBus;
-use StephBugDev\ServiceBus\Exception\RuntimeException;
-use StephBugDev\ServiceBus\Plugin\LaravelContainerResolver;
+use StephBug\ServiceBus\Bus\CommandBus;
+use StephBug\ServiceBus\Bus\EventBus;
+use StephBug\ServiceBus\Bus\NamedMessageBus;
+use StephBug\ServiceBus\Bus\QueryBus;
+use StephBug\ServiceBus\Exception\RuntimeException;
+use StephBug\ServiceBus\Plugin\LaravelContainerResolver;
 
 class ServiceBusManager
 {

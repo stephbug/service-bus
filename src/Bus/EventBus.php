@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StephBugDev\ServiceBus\Bus;
+namespace StephBug\ServiceBus\Bus;
 
 use Prooph\ServiceBus\EventBus as BaseEventBus;
 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace StephBugDev\ServiceBus;
+namespace StephBug\ServiceBus;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use StephBugDev\ServiceBus\Bus\CommandBus;
-use StephBugDev\ServiceBus\Bus\EventBus;
-use StephBugDev\ServiceBus\Bus\QueryBus;
-use StephBugDev\ServiceBus\Exception\RuntimeException;
+use StephBug\ServiceBus\Bus\CommandBus;
+use StephBug\ServiceBus\Bus\EventBus;
+use StephBug\ServiceBus\Bus\QueryBus;
+use StephBug\ServiceBus\Exception\RuntimeException;
 
 class ServiceBusProvider extends ServiceProvider
 {
