@@ -36,7 +36,10 @@ class ServiceBusProvider extends ServiceProvider
 
     public function provides(): array
     {
-        return [ServiceBusManager::class, 'service_bus'];
+        return [
+            ServiceBusManager::class, 'service_bus',
+            CommandBus::class, EventBus::class, QueryBus::class
+        ];
     }
 
     protected function registerBusManager(): void
