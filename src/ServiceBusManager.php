@@ -8,6 +8,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\Common\Messaging\FQCNMessageFactory;
 use Prooph\Common\Messaging\MessageFactory;
+use Prooph\ServiceBus\Plugin\MessageFactoryPlugin;
 use Prooph\ServiceBus\Plugin\Router\AsyncSwitchMessageRouter;
 use StephBug\ServiceBus\Bus\CommandBus;
 use StephBug\ServiceBus\Bus\EventBus;
@@ -77,7 +78,9 @@ class ServiceBusManager
     protected function addPlugins(NamedMessageBus $bus, array $config): void
     {
         $messageContext = $this->app->make($config['message_context'] ?? FQCNMessageFactory::class);
-        $this->app->bindIf(MessageFactory::class, $messageContext);
+        $messageFactoryPlugin = new MessageFactoryPlugin($messageContext);
+        $bus->addPlugin($messageFactoryPlugin);
+
 
         $serviceLocator = new LaravelContainerResolver($this->app);
         $bus->addPlugin($serviceLocator);
