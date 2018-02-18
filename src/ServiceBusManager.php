@@ -7,6 +7,7 @@ namespace StephBug\ServiceBus;
 use Illuminate\Contracts\Foundation\Application;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\Common\Messaging\FQCNMessageFactory;
+use Prooph\Common\Messaging\MessageFactory;
 use Prooph\ServiceBus\Plugin\Router\AsyncSwitchMessageRouter;
 use StephBug\ServiceBus\Bus\CommandBus;
 use StephBug\ServiceBus\Bus\EventBus;
@@ -60,23 +61,23 @@ class ServiceBusManager
 
     public function command(string $name = null): NamedMessageBus
     {
-        return $this->make($name ?? 'default', CommandBus::class);
+        return $this->make($name ?? 'default', 'command');
     }
 
     public function event(string $name = null): NamedMessageBus
     {
-        return $this->make($name ?? 'default', EventBus::class);
+        return $this->make($name ?? 'default', 'event');
     }
 
     public function query(string $name = null): NamedMessageBus
     {
-        return $this->make($name ?? 'default', QueryBus::class);
+        return $this->make($name ?? 'default', 'query');
     }
 
     protected function addPlugins(NamedMessageBus $bus, array $config): void
     {
         $messageContext = $this->app->make($config['message_context'] ?? FQCNMessageFactory::class);
-        $bus->addPlugin($messageContext);
+        $this->app->bindIf(MessageFactory::class, $messageContext);
 
         $serviceLocator = new LaravelContainerResolver($this->app);
         $bus->addPlugin($serviceLocator);
@@ -88,15 +89,15 @@ class ServiceBusManager
 
     protected function addRouter(NamedMessageBus $bus, array $config): void
     {
-        $router = $config['router.concrete'];
+        $router = $config['router']['concrete'] ?? null;
 
-        if (!class_exists($router)) {
+        if (!$router || !class_exists($router)) {
             throw new RuntimeException(
                 sprintf('Unable to locate router class for bus type %s and name %s', $bus->busType(), $bus->busName())
             );
         }
 
-        $routerInstance = new $router($config['routes'] ?? []);
+        $routerInstance = new $router($config['router']['routes'] ?? []);
 
         if ($asyncSwitchId = $config['async_switch_id'] ?? null) {
             $producer = $this->app->make($config['async_switch_id']);
@@ -107,7 +108,7 @@ class ServiceBusManager
         $routerInstance->attachToMessageBus($bus);
     }
 
-    protected function getConfigForBus(string $name, string $type): array
+    protected function getConfigForBus(string $type, string $name): array
     {
         $id = sprintf('service_bus.buses.%s.%s', $type, $name);
 
@@ -126,22 +127,28 @@ class ServiceBusManager
     {
         $emitter = $this->app->make($emitter);
 
-        $bus = new $type($emitter);
-        $bus->setBusName($name);
-
         switch ($type) {
-            case CommandBus::class:
-                $bus->setBusType('command');
+            case 'command':
+                $busType = CommandBus::class;
                 break;
 
-            case EventBus::class:
-                $bus->setBusType('event');
+            case 'event':
+                $busType = EventBus::class;
                 break;
 
-            case QueryBus::class:
-                $bus->setBusType('query');
+            case 'query':
+                $busType = QueryBus::class;
                 break;
+
+            default:
+                throw new RuntimeException(
+                    sprintf('Unable to determine bus type %s for bus name %s', $type, $name)
+                );
         }
+
+        $bus = new $busType($emitter);
+        $bus->setBusType($type);
+        $bus->setBusName($name);
 
         return $bus;
     }
