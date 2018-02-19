@@ -77,8 +77,8 @@ class PsrLoggerPlugin extends AbstractPlugin
         $context = [];
         $messageBus = $event->getTarget();
         if ($messageBus instanceof NamedMessageBus) {
-            $context['bus-type'] = $messageBus->getType();
-            $context['bus-name'] = $messageBus->getName();
+            $context['bus-type'] = $messageBus->busType();
+            $context['bus-name'] = $messageBus->busName();
         } else {
             $reflect = new ReflectionClass($messageBus);
             $context['bus-type'] = $reflect->getShortName();
