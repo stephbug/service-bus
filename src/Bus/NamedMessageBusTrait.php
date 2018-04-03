@@ -54,4 +54,22 @@ trait NamedMessageBusTrait
 
         $this->plugins[] = ['plugin' => $plugin, 'service_id' => $serviceId];
     }
+
+    public function removePlugin(Plugin $toRemove, string $serviceId = null): void
+    {
+        $toRemove->detachFromMessageBus($this);
+
+        // checkMe exception if failed ?
+        foreach ($this->plugins as $plugin) {
+            if ($serviceId) {
+                if ($plugin['service_id'] === $serviceId) {
+                    unset($plugin['service_id']);
+                }
+            } else {
+                if ($plugin['plugin'] === $toRemove) {
+                    unset($plugin['plugin']);
+                }
+            }
+        }
+    }
 }
