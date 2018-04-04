@@ -148,10 +148,6 @@ class ServiceBusManager
                 );
         }
 
-        if (!$busType instanceof NamedMessageBus) {
-            throw new RuntimeException(sprintf('Bus name % must implement %s', $name, NamedMessageBus::class));
-        }
-
         $bus = new $busType($this->app->make($emitter));
         $bus->setBusType($type);
         $bus->setBusName($name);
