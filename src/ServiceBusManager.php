@@ -48,8 +48,9 @@ class ServiceBusManager
             $config = $this->getConfigForBus($busType, $busName);
 
             $emitter = $config['emitter'] ?? ProophActionEventEmitter::class;
+            $aBus = $config['bus_class'] ?? null;
 
-            $bus = $this->getBusInstance($busType, $busName, $emitter);
+            $bus = $this->getBusInstance($busType, $busName, $emitter, $aBus);
 
             $this->addPlugins($bus, $config);
             $this->addRouter($bus, $config);
@@ -126,21 +127,19 @@ class ServiceBusManager
         return $config;
     }
 
-    protected function getBusInstance(string $type, string $name, string $emitter): NamedMessageBus
+    protected function getBusInstance(string $type, string $name, string $emitter, string $aBus = null): NamedMessageBus
     {
-        $emitter = $this->app->make($emitter);
-
         switch ($type) {
             case 'command':
-                $busType = CommandBus::class;
+                $busType = $aBus ?? CommandBus::class;
                 break;
 
             case 'event':
-                $busType = EventBus::class;
+                $busType = $aBus ?? EventBus::class;
                 break;
 
             case 'query':
-                $busType = QueryBus::class;
+                $busType = $aBus ?? QueryBus::class;
                 break;
 
             default:
@@ -149,7 +148,11 @@ class ServiceBusManager
                 );
         }
 
-        $bus = new $busType($emitter);
+        if (!$busType instanceof NamedMessageBus) {
+            throw new RuntimeException(sprintf('Bus name % must implement %s', $name, NamedMessageBus::class));
+        }
+
+        $bus = new $busType($this->app->make($emitter));
         $bus->setBusType($type);
         $bus->setBusName($name);
 
