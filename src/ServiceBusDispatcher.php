@@ -42,7 +42,8 @@ class ServiceBusDispatcher
                 throw new RuntimeException(
                     sprintf(
                         'Unable to determine bus type %s for message name %s',
-                        $message->messageType(), $message->messageName()
+                        $message->messageType(),
+                        $message->messageName()
                     ));
         }
     }

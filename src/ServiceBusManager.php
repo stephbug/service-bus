@@ -15,7 +15,6 @@ use StephBug\ServiceBus\Bus\EventBus;
 use StephBug\ServiceBus\Bus\NamedMessageBus;
 use StephBug\ServiceBus\Bus\QueryBus;
 use StephBug\ServiceBus\Exception\RuntimeException;
-use StephBug\ServiceBus\Plugin\LaravelContainerResolver;
 
 class ServiceBusManager
 {
@@ -82,10 +81,6 @@ class ServiceBusManager
         $messageFactoryPlugin = new MessageFactoryPlugin($messageContext);
         $bus->addPlugin($messageFactoryPlugin);
 
-
-        $serviceLocator = new LaravelContainerResolver($this->app);
-        $bus->addPlugin($serviceLocator);
-
         foreach ($config['plugins'] ?? [] as $plugin) {
             $bus->addPlugin($this->app->make($plugin));
         }
@@ -97,14 +92,18 @@ class ServiceBusManager
 
         if (!$router || !class_exists($router)) {
             throw new RuntimeException(
-                sprintf('Unable to locate router class for bus type %s and name %s', $bus->busType(), $bus->busName())
+                sprintf(
+                    'Unable to locate router class for bus type %s and name %s',
+                    $bus->busType(),
+                    $bus->busName()
+                )
             );
         }
 
         $routerInstance = new $router($config['router']['routes'] ?? []);
 
         if ($asyncSwitchId = $config['async_switch_id'] ?? null) {
-            $producer = $this->app->make($config['async_switch_id']);
+            $producer = $this->app->make($asyncSwitchId);
 
             $routerInstance = new AsyncSwitchMessageRouter($routerInstance, $producer);
         }
@@ -148,6 +147,7 @@ class ServiceBusManager
                 );
         }
 
+        /** @var NamedMessageBus $bus */
         $bus = new $busType($this->app->make($emitter));
         $bus->setBusType($type);
         $bus->setBusName($name);
